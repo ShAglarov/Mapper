@@ -8,18 +8,7 @@
 import UIKit
 import MapKit
 import CoreLocation
-
-// Структура для хранения данных точки (название и координаты), соответствует Codable для сохранения в UserDefaults
-struct SavedPoint: Codable {
-    let name: String
-    let latitude: Double
-    let longitude: Double
-
-    // Вычисляемое свойство для получения координаты CLLocationCoordinate2D из сохранённых значений
-    var coordinate: CLLocationCoordinate2D {
-        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    }
-}
+import RealmSwift
 
 class ViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource, UITableViewDelegate {
 
@@ -188,20 +177,22 @@ class ViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource
         tableView.setEditing(!tableView.isEditing, animated: true)
     }
 
-    // Загрузка сохранённых точек из UserDefaults
-    private func loadPoints() {
-        let defaults = UserDefaults.standard
-        if let savedData = defaults.data(forKey: "SavedPoints"),
-           let decodedPoints = try? JSONDecoder().decode([SavedPoint].self, from: savedData) {
-            savedPoints = decodedPoints
+    let realm = try! Realm()
+
+    func loadPoints() {
+        let points = realm.objects(SavedPoint.self)
+        savedPoints = Array(points)
+    }
+
+    func savePoint(_ point: SavedPoint) {
+        try! realm.write {
+            realm.add(point)
         }
     }
 
-    // Сохранение текущего массива точек в UserDefaults
-    private func savePoints() {
-        let defaults = UserDefaults.standard
-        if let encodedData = try? JSONEncoder().encode(savedPoints) {
-            defaults.set(encodedData, forKey: "SavedPoints")
+    func deletePoint(_ point: SavedPoint) {
+        try! realm.write {
+            realm.delete(point)
         }
     }
 
@@ -284,8 +275,8 @@ class ViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource
         mapView.addOverlay(circleOverlay)
         // Добавляем новую точку в массив данных и сохраняем в UserDefaults
         let newPoint = SavedPoint(name: name, latitude: latitude, longitude: longitude)
-        savedPoints.append(newPoint)
-        savePoints()
+        savePoint(newPoint)
+        loadPoints() // Обновляем массив
         tableView.reloadData()
         // Центрируем карту на добавленной точке (с небольшим масштабом вокруг)
         let region = MKCoordinateRegion(center: coord, span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
@@ -325,22 +316,31 @@ class ViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let point = savedPoints[indexPath.row]
+
             // Удаляем аннотацию с карты
             if let annotation = mapView.annotations.first(where: {
                 $0.coordinate.latitude == point.latitude && $0.coordinate.longitude == point.longitude
             }) {
                 mapView.removeAnnotation(annotation)
             }
+
             // Удаляем overlay с карты
             if let overlay = mapView.overlays.first(where: { overlay in
                 guard let circle = overlay as? MKCircle else { return false }
-                return abs(circle.coordinate.latitude - point.latitude) < 1e-6 && abs(circle.coordinate.longitude - point.longitude) < 1e-6
+                return abs(circle.coordinate.latitude - point.latitude) < 1e-6 &&
+                       abs(circle.coordinate.longitude - point.longitude) < 1e-6
             }) {
                 mapView.removeOverlay(overlay)
             }
-            // Удаляем из данных и UserDefaults
-            savedPoints.remove(at: indexPath.row)
-            savePoints()
+
+            // Удаляем из базы данных Realm
+            let realm = try! Realm()
+            try! realm.write {
+                realm.delete(point)
+            }
+
+            // Обновляем локальный массив
+            loadPoints()
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
     }
@@ -349,24 +349,34 @@ class ViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource
         let edit = UIContextualAction(style: .normal, title: "Редакт.") { [weak self] (action, view, completionHandler) in
             guard let self = self else { return }
             let point = self.savedPoints[indexPath.row]
+
             let alert = UIAlertController(title: "Редактировать точку", message: "Измените название точки", preferredStyle: .alert)
             alert.addTextField { $0.text = point.name }
+
             alert.addAction(UIAlertAction(title: "Сохранить", style: .default, handler: { _ in
                 guard let newName = alert.textFields?.first?.text, !newName.isEmpty else { return }
-                self.savedPoints[indexPath.row] = SavedPoint(name: newName, latitude: point.latitude, longitude: point.longitude)
-                self.savePoints()
-                self.tableView.reloadRows(at: [indexPath], with: .automatic)
-                // Также обновим аннотацию на карте
+
+                // Обновляем точку в Realm
+                let realm = try! Realm()
+                try! realm.write {
+                    point.name = newName
+                }
+
+                // Обновляем аннотацию на карте
                 if let annotation = self.mapView.annotations.first(where: {
                     $0.coordinate.latitude == point.latitude && $0.coordinate.longitude == point.longitude
                 }) as? MKPointAnnotation {
                     annotation.title = newName
                 }
+
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }))
+
             alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
             self.present(alert, animated: true)
             completionHandler(true)
         }
+
         edit.backgroundColor = .orange
         return UISwipeActionsConfiguration(actions: [edit])
     }
