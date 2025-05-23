@@ -28,6 +28,8 @@ class ViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource
     private let tableView = UITableView()
     private var isTableViewHidden = false
     private var tableViewHeightConstraint: NSLayoutConstraint?
+    private var mapViewHeightConstraint: NSLayoutConstraint?
+    private var tableViewTopConstraint: NSLayoutConstraint?
 
     // Массив сохранённых точек (название + координаты)
     private var savedPoints: [SavedPoint] = []
@@ -65,11 +67,25 @@ class ViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource
 
     @objc private func toggleListVisibility() {
         isTableViewHidden.toggle()
-        // Анимация: скрыть или показать таблицу
-        UIView.animate(withDuration: 0.3) {
-            self.tableView.alpha = self.isTableViewHidden ? 0 : 1
+
+        if isTableViewHidden {
+            // Растягиваем mapView на весь экран, убираем tableView
+            mapViewHeightConstraint?.isActive = false
+            mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+            tableView.isHidden = true
+        } else {
+            // Возвращаем исходные constraints
+            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = false
+            mapViewHeightConstraint?.isActive = true
+            tableView.isHidden = false
         }
-        // Меняем текст на кнопке
+
+        // Обновляем layout с анимацией
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+
         let newTitle = isTableViewHidden ? "Показать список" : "Скрыть список"
         (view.subviews.first(where: { $0 is UIButton && ($0 as! UIButton).currentTitle?.contains("список") == true }) as? UIButton)?.setTitle(newTitle, for: .normal)
     }
@@ -82,13 +98,19 @@ class ViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource
         mapView.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         // Карта занимает верхнюю часть экрана (60% высоты), таблица — оставшуюся нижнюю часть
+        
+        // Основной констрейнт — карта занимает 60%
+        mapViewHeightConstraint = mapView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6)
+        // Таблица — начинается под картой, занимает 40%
+        tableViewTopConstraint = tableView.topAnchor.constraint(equalTo: mapView.bottomAnchor)
+
         NSLayoutConstraint.activate([
             mapView.topAnchor.constraint(equalTo: view.topAnchor),
             mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.6),
+            mapViewHeightConstraint!,
 
-            tableView.topAnchor.constraint(equalTo: mapView.bottomAnchor),
+            tableViewTopConstraint!,
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
