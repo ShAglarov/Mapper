@@ -10,7 +10,6 @@
 		906B5E3F2DE03EE5007574D2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 906B5E3E2DE03EE5007574D2 /* AppDelegate.swift */; };
 		906B5E412DE03EE5007574D2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 906B5E402DE03EE5007574D2 /* SceneDelegate.swift */; };
 		906B5E432DE03EE5007574D2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 906B5E422DE03EE5007574D2 /* ViewController.swift */; };
-		906B5E462DE03EE5007574D2 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 906B5E452DE03EE5007574D2 /* Base */; };
 		906B5E482DE03EE6007574D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 906B5E472DE03EE6007574D2 /* Assets.xcassets */; };
 		906B5E4B2DE03EE6007574D2 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 906B5E4A2DE03EE6007574D2 /* Base */; };
 /* End PBXBuildFile section */
@@ -20,7 +19,6 @@
 		906B5E3E2DE03EE5007574D2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		906B5E402DE03EE5007574D2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		906B5E422DE03EE5007574D2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		906B5E452DE03EE5007574D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		906B5E472DE03EE6007574D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		906B5E4A2DE03EE6007574D2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		906B5E4C2DE03EE6007574D2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -59,7 +57,6 @@
 				906B5E3E2DE03EE5007574D2 /* AppDelegate.swift */,
 				906B5E402DE03EE5007574D2 /* SceneDelegate.swift */,
 				906B5E422DE03EE5007574D2 /* ViewController.swift */,
-				906B5E442DE03EE5007574D2 /* Main.storyboard */,
 				906B5E472DE03EE6007574D2 /* Assets.xcassets */,
 				906B5E492DE03EE6007574D2 /* LaunchScreen.storyboard */,
 				906B5E4C2DE03EE6007574D2 /* Info.plist */,
@@ -127,7 +124,6 @@
 			files = (
 				906B5E482DE03EE6007574D2 /* Assets.xcassets in Resources */,
 				906B5E4B2DE03EE6007574D2 /* Base in Resources */,
-				906B5E462DE03EE5007574D2 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,14 +143,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		906B5E442DE03EE5007574D2 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				906B5E452DE03EE5007574D2 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		906B5E492DE03EE6007574D2 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -296,7 +284,6 @@
 				INFOPLIST_FILE = Mapper/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -323,7 +310,6 @@
 				INFOPLIST_FILE = Mapper/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
