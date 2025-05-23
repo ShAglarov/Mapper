@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MapKit
 import RealmSwift
 
 class SavedPoint: Object {
